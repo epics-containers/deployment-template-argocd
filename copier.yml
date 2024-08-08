@@ -26,7 +26,7 @@ argocd_server:
   help: Argocd server URI.
   placeholder: For missing platform override repo_uri, or add your own in a PR.
   choices:
-    - argocd.diamond.ac.uk/
+    - argocd.diamond.ac.uk
 
 argocd_project:
   type: str
