@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ ioc_group }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ argocd_project }}
+  destination:
+    name: {{ cluster_name }}
+    namespace: {{ cluster_namespace }}
+  source:
+    path: apps
+    repoURL: {{ repo_uri }}
+    targetRevision: main
+    helm:
+      version: v3
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

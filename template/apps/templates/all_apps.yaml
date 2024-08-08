@@ -1,0 +1,1 @@
+{{- include "ec-helm-charts.argocd-apps" . -}}

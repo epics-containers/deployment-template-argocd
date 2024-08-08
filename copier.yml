@@ -1,0 +1,98 @@
+_message_before_copy: |
+  This template will create a new repository which describes the deployment IOCs and
+  services to a Kubernetes cluster using Argocd. Each repository gathers a collection
+  of ec services as Argocd Apps which are deployed to *the same Argocd Project*.
+
+_subdirectory: "template"
+
+_preserve_symlinks: true
+
+_tasks:
+  - git init --initial-branch=main
+  # Add the remote if it doesn't exist
+  - if ! git remote | grep origin; then git remote add origin {{repo_uri}}; fi
+
+ioc_group:
+  type: str
+  help: Short name for the collection of IOCs in this repo.
+  placeholder: e.g. "VA", "PS"
+  validator: >-
+    {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
+    {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
+    {% endif %}
+
+argocd_server:
+  type: str
+  help: Argocd server URI.
+  placeholder: For missing platform override repo_uri, or add your own in a PR.
+  choices:
+    - argocd.diamond.ac.uk/
+
+argocd_project:
+  type: str
+  help: Argocd project e.g. p38-iocs, j20-iocs, p47-iocs
+  validator: >-
+    {% if not (argocd_project | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{argocd_project}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif %}
+
+cluster_name:
+  type: str
+  help: Name of the cluster where the IOCs and services in this repository will run
+  placeholder: k8s-p38, k8s-i20-1, pollux, etc.
+  validator: >-
+    {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_name}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif -%}
+
+cluster_namespace:
+  type: str
+  help: Cluster namespace e.g. p38-iocs, j20-iocs, p47-iocs
+  validator: >-
+    {% if not (cluster_namespace | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_namespace}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif %}
+
+
+git_platform:
+  type: str
+  help: Git platform hosting this repository.
+  placeholder: For missing platform override repo_uri, or add your own in a PR.
+  choices:
+    - github.com
+    - gitlab.diamond.ac.uk
+
+github_org:
+  type: str
+  help: The GitHub organisation that will contain this repo.
+  placeholder: e.g. your own GitHub account or epics-containers
+  when: >-
+    {{ git_platform == 'github.com' }}
+  validator: >-
+    {% if not (github_org | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
+    {{github_org}} must be lower case AlphaNumeric and start with a letter,
+    it may contain hyphens
+    {% endif -%}
+
+repo_uri:
+  type: str
+  help: Remote URI of the services repository.
+  default: >-
+    {% if git_platform == 'gitlab.diamond.ac.uk' -%}
+    git@{{git_platform}}:controls/containers/{{type}}/{{ioc_group}}.git
+    {%- else -%}
+    git@{{git_platform}}:{{github_org}}/{{ioc_group}}.git
+    {%- endif %}
+
+logging_url:
+  type: str
+  help: URL for centralized logging.
+  placeholder: add your own in a PR if you wish or edit environment.sh after copying
+  choices:
+    DLS: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
+    Other: "TODO: add your logging URL here"
+    None: ""
+  default: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*

@@ -1,0 +1,8 @@
+**/*.tz
+**/*.tgz
+.history
+venv*
+.venv*
+**/Chart.lock
+**/charts
+**/*copy

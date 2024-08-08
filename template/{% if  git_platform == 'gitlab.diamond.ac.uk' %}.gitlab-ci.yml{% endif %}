@@ -1,0 +1,10 @@
+stages:
+  - verify
+
+verify:
+  stage: verify
+  tags:
+    - controls,k8s
+  image: bitnami/kubectl:latest
+  script:
+    - bash ./.gitlab/ci_verify.sh

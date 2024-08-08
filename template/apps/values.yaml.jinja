@@ -1,0 +1,33 @@
+# This file configures an ArgoCD app of apps that represent a 
+# group of beamline or accelerator IOCs and services. The configuration of the 
+# services are in the separate repo indicated by repoURL.
+
+# This repostory only controls which services and which versions of those
+# services should be running on the cluster. It is recommended that this repo
+# be updated by a CI/CD pipeline or configuration tools only.
+
+project: {{ argocd_project }}
+destination:
+  name: {{ cluster }}
+  namespace: {{ namespace }}
+source:
+  repoURL: {{ repo_uri }}
+  targetRevision:  # A git tag
+
+# list of services to deploy. Each item is of the form:
+# - service: service name as it appears in K8S (statefulset/deployment name)
+#   targetRevision: optional override for targetRevision above
+#   repoURL: optional override for git repo to source the helm chart from
+#            the path is always services/<service> within that repo
+#   enabled: set to false to stop a service
+#   removed: set to true to remove the service from the cluster
+
+services:
+  # shared epics services ######################################################
+  epics-pvcs:
+  epics-opis:
+
+  # epics iocs #################################################################
+  {{ ioc_group }}-ea-test-01:
+    enabled: true
+    targetRevision:  # A git tag
