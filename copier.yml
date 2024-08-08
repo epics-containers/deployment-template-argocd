@@ -10,7 +10,7 @@ _preserve_symlinks: true
 _tasks:
   - git init --initial-branch=main
   # Add the remote if it doesn't exist
-  - if ! git remote | grep origin; then git remote add origin {{repo_uri}}; fi
+  - if ! git remote | grep origin; then git remote add origin {{ deployment_repo }}; fi
 
 ioc_group:
   type: str
@@ -24,7 +24,7 @@ ioc_group:
 argocd_server:
   type: str
   help: Argocd server URI.
-  placeholder: For missing platform override repo_uri, or add your own in a PR.
+  placeholder: For missing platform override argocd_server, or add your own in a PR.
   choices:
     - argocd.diamond.ac.uk
 
@@ -60,7 +60,7 @@ cluster_namespace:
 git_platform:
   type: str
   help: Git platform hosting this repository.
-  placeholder: For missing platform override repo_uri, or add your own in a PR.
+  placeholder: For missing platform override git_platform, or add your own in a PR.
   choices:
     - github.com
     - gitlab.diamond.ac.uk
@@ -77,14 +77,24 @@ github_org:
     it may contain hyphens
     {% endif -%}
 
-repo_uri:
+deployment_repo:
+  type: str
+  help: Remote URI of this repository.
+  default: >-
+    {% if git_platform == 'gitlab.diamond.ac.uk' -%}
+    https://{{git_platform}}/controls/containers/beamline/{{ioc_group}}-services
+    {%- else -%}
+    https://{{git_platform}}/{{github_org}}/{{ioc_group}}
+    {%- endif %}
+
+services_repo:
   type: str
   help: Remote URI of the services repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    git@{{git_platform}}:controls/containers/{{type}}/{{ioc_group}}.git
+    https://{{git_platform}}/controls/containers/beamline/{{ioc_group}}-services
     {%- else -%}
-    git@{{git_platform}}:{{github_org}}/{{ioc_group}}.git
+    https://{{git_platform}}/{{github_org}}/{{ioc_group}}
     {%- endif %}
 
 logging_url:

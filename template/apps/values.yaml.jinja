@@ -11,7 +11,7 @@ destination:
   name: {{ cluster_name }}
   namespace: {{ cluster_namespace }}
 source:
-  repoURL: {{ repo_uri }}
+  repoURL: {{ services_repo }}
   targetRevision:  # A git tag
 
 # list of services to deploy. Each item is of the form:
