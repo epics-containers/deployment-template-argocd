@@ -7,15 +7,10 @@ _subdirectory: "template"
 
 _preserve_symlinks: true
 
-_tasks:
-  - git init --initial-branch=main
-  # Add the remote if it doesn't exist
-  - if ! git remote | grep origin; then git remote add origin {{ deployment_repo }}; fi
-
 ioc_group:
   type: str
   help: Short name for the collection of IOCs in this repo.
-  placeholder: e.g. "VA", "PS"
+  placeholder: e.g. "bl01t", "VA", "PS"
   validator: >-
     {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
     {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
@@ -30,32 +25,33 @@ argocd_server:
 
 argocd_project:
   type: str
-  help: Argocd project e.g. p38-iocs, j20-iocs, p47-iocs
+  help: Argocd project e.g. "bl01t", "VA", "PS"
+  default: {{ ioc_group }}
   validator: >-
     {% if not (argocd_project | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{argocd_project}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
-cluster_name:
-  type: str
-  help: Name of the cluster where the IOCs and services in this repository will run
-  placeholder: k8s-p38, k8s-i20-1, pollux, etc.
-  validator: >-
-    {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_name}} must be lower case alphanumeric and start with a letter,
-    it may contain hyphens
-    {% endif -%}
-
 cluster_namespace:
   type: str
-  help: Cluster namespace e.g. p38-iocs, j20-iocs, p47-iocs
+  help: Kubernetes cluster namespace
+  placeholder: e.g. "bl01t-beamline", "j20-beamline", "p47-beamline"
   validator: >-
     {% if not (cluster_namespace | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{cluster_namespace}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
+cluster_name:
+  type: str
+  help: Name of the k8s cluster where the IOCs and services in this repository will run
+  placeholder: e.g. "k8s-p38", "k8s-i20-1", "pollux", etc.
+  validator: >-
+    {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_name}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif -%}
 
 git_platform:
   type: str
@@ -77,12 +73,26 @@ github_org:
     it may contain hyphens
     {% endif -%}
 
+dls_technical_area:
+  type: str
+  help: The DLS technical area
+  when: >-
+    {{ git_platform == 'gitlab.diamond.ac.uk' }}
+  validator: >-
+    {% if not (github_org | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
+    {{github_org}} must be lower case AlphaNumeric and start with a letter,
+    it may contain hyphens
+    {% endif -%}
+  choices:
+    - beamline
+    - accelerator
+
 deployment_repo:
   type: str
   help: Remote URI of this repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/beamline/{{ioc_group}}-deployment
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-deployment
     {%- else -%}
     https://{{git_platform}}/{{github_org}}/{{ioc_group}}-deployment
     {%- endif %}
@@ -92,7 +102,7 @@ services_repo:
   help: Remote URI of the services repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/beamline/{{ioc_group}}-services
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-services
     {%- else -%}
     https://{{git_platform}}/{{github_org}}/{{ioc_group}}-services
     {%- endif %}
@@ -100,9 +110,6 @@ services_repo:
 logging_url:
   type: str
   help: URL for centralized logging.
-  placeholder: add your own in a PR if you wish or edit environment.sh after copying
+  placeholder: For missing platform override logging_url, or add your own in a PR.
   choices:
-    DLS: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
-    Other: "TODO: add your logging URL here"
-    None: ""
-  default: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
+    - https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
