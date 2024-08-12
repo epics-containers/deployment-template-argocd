@@ -52,7 +52,7 @@ cluster_namespace:
 cluster_name:
   type: str
   help: Name of the k8s cluster where the IOCs and services in this repository will run
-  placeholder: e.g. "k8s-p38", "k8s-i20-1", "pollux", etc.
+  placeholder: e.g. "k8s-p38", "k8s-i20-1", "pollux"
   validator: >-
     {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{cluster_name}} must be lower case alphanumeric and start with a letter,
