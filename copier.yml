@@ -57,7 +57,7 @@ cluster_name:
     {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{cluster_name}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
-    {% endif -%}
+    {% endif %}
 
 git_platform:
   type: str
