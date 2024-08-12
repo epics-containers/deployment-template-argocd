@@ -62,7 +62,6 @@ cluster_name:
 git_platform:
   type: str
   help: Git platform hosting this repository. For missing platform override git_platform, or add your own in a PR.
-  placeholder:
   choices:
     - github.com
     - gitlab.diamond.ac.uk
