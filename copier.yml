@@ -20,7 +20,7 @@ description:
   type: str
   help: A One line description of the module
   default: >-
-    {{ services }} IOC Instances and Services
+    {{ ioc_group }} IOC Instances and Services
 
 argocd_server:
   type: str
