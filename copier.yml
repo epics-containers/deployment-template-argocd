@@ -26,7 +26,8 @@ argocd_server:
 argocd_project:
   type: str
   help: Argocd project e.g. "bl01t", "VA", "PS"
-  default: {{ ioc_group }}
+  default:  >-
+    {{ ioc_group }}
   validator: >-
     {% if not (argocd_project | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{argocd_project}} must be lower case alphanumeric and start with a letter,
