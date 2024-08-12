@@ -9,17 +9,22 @@ _preserve_symlinks: true
 
 ioc_group:
   type: str
-  help: Short name for the collection of IOCs in this repo.
+  help: Short name for the collection of services.
   placeholder: e.g. "bl01t", "VA", "PS"
   validator: >-
     {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
     {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
     {% endif %}
 
+description:
+  type: str
+  help: A One line description of the module
+  default: >-
+    {{ services }} IOC Instances and Services
+
 argocd_server:
   type: str
-  help: Argocd server URI.
-  placeholder: For missing platform override argocd_server, or add your own in a PR.
+  help: Argocd server URI. For missing platform override argocd_server, or add your own in a PR.
   choices:
     - argocd.diamond.ac.uk
 
@@ -56,8 +61,8 @@ cluster_name:
 
 git_platform:
   type: str
-  help: Git platform hosting this repository.
-  placeholder: For missing platform override git_platform, or add your own in a PR.
+  help: Git platform hosting this repository. For missing platform override git_platform, or add your own in a PR.
+  placeholder:
   choices:
     - github.com
     - gitlab.diamond.ac.uk
@@ -110,7 +115,6 @@ services_repo:
 
 logging_url:
   type: str
-  help: URL for centralized logging.
-  placeholder: For missing platform override logging_url, or add your own in a PR.
+  help: URL for centralized logging. For missing platform override logging_url, or add your own in a PR.
   choices:
     - https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
