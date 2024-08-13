@@ -14,7 +14,7 @@ destination:
   namespace: {{ cluster_namespace }}
 source:
   repoURL: {{ services_repo }}
-  targetRevision:  # A git tag
+  targetRevision: {{ services_release }}
 
 # list of services to deploy. Each item is of the form:
 # - service: service name as it appears in K8S (statefulset/deployment name)
@@ -33,4 +33,4 @@ services:
   {{ ioc_group }}-ea-test-01:
     enabled: true
     ec-service: true
-    targetRevision:  # A git tag
+    targetRevision: {{ services_release }}
