@@ -120,5 +120,5 @@ logging_url:
   type: str
   help: URL for centralized logging. For missing platform override logging_url, or add your own in a PR.
   choices:
-    - Skip: ""
-    - DLS: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
+    Skip: ""
+    DLS: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*
