@@ -10,7 +10,7 @@ _preserve_symlinks: true
 ioc_group:
   type: str
   help: Short name for the collection of services.
-  placeholder: e.g. "bl01t", "VA", "PS"
+  placeholder: e.g. "t01", "VA", "PS"
   validator: >-
     {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
     {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
@@ -39,23 +39,49 @@ argocd_project:
     it may contain hyphens
     {% endif %}
 
-cluster_namespace:
+cluster_namespace_apps:
   type: str
-  help: Kubernetes cluster namespace
+  help: Kubernetes cluster namespace for the Argocd Apps
   placeholder: e.g. "bl01t-beamline", "j20-beamline", "p47-beamline"
   validator: >-
-    {% if not (cluster_namespace | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_namespace}} must be lower case alphanumeric and start with a letter,
+    {% if not (cluster_namespace_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_namespace_apps}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
-cluster_name:
+cluster_name_apps:
+  type: str
+  help: Name of the k8s cluster for the Argocd Apps
+  placeholder: e.g. "k8s-p38", "k8s-i20-1", "pollux"
+  default:  >-
+    {{ cluster_namespace_apps }}
+  validator: >-
+    {% if not (cluster_name_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_name_apps}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif %}
+
+cluster_namespace_services:
+  type: str
+  help: Kubernetes cluster namespace where the IOCs and services in this repository will run
+  placeholder: e.g. "bl01t-beamline", "j20-beamline", "p47-beamline"
+  default:  >-
+    {{ cluster_namespace_apps }}
+  validator: >-
+    {% if not (cluster_namespace_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_namespace_apps}} must be lower case alphanumeric and start with a letter,
+    it may contain hyphens
+    {% endif %}
+
+cluster_name_services:
   type: str
   help: Name of the k8s cluster where the IOCs and services in this repository will run
   placeholder: e.g. "k8s-p38", "k8s-i20-1", "pollux"
+  default:  >-
+    {{ cluster_name_apps }}
   validator: >-
-    {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_name}} must be lower case alphanumeric and start with a letter,
+    {% if not (cluster_name_services | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_name_services}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
