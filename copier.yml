@@ -27,18 +27,13 @@ argocd_server:
   help: Argocd server URI. For missing platform override argocd_server, or add your own in a PR.
   choices:
     argocd.diamond.ac.uk: argocd.diamond.ac.uk
-    custom: ""
+    specify: ""
 
 argocd_server_custom:
   type: str
-  help: A custom Argocd server URI
+  help: A custom Argocd server URI e.g. "argocd.diamond.ac.uk"
   when: >-
     {{ not argocd_server }}
-  validator: >-
-    {% if not (argocd_server_custom | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{argocd_server_custom}} must be lower case alphanumeric and start with a letter,
-    it may contain hyphens
-    {% endif %}
 
 argocd_project:
   type: str
