@@ -140,7 +140,7 @@ services_repo:
 
 services_release:
   type: str
-  help: A release of the services repository to track e.g. "2024.1.1"
+  help: The initial release of the services repository to track e.g. "2024.1.1"
 
 logging_url:
   type: str
