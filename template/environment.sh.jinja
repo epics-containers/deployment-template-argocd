@@ -35,7 +35,7 @@ source <(ec --show-completion ${SHELL})
 #### SECTION 3. Configure Argocd Server ###################################
 
 # TODO add commands here to enable argocd cli
-argocd login {{ argocd_server }} --grpc-web --sso
+argocd login {{ argocd_server or argocd_server_custom }} --grpc-web --sso
 
 # enable shell completion for k8s tools
 if [ -n "$ZSH_VERSION" ]; then SHELL=zsh; fi
