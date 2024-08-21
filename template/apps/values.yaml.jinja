@@ -30,6 +30,7 @@ services:
   epics-opis:
 
   # epics iocs #################################################################
-  example-ea-test-01:
+  {{ ioc_group }}-ea-test-01:
+    enabled: true
     ec_service: true
     targetRevision: {{ services_release }}
