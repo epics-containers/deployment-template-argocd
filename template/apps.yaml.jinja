@@ -7,8 +7,8 @@ metadata:
 spec:
   project: {{ argocd_project }}
   destination:
-  name: {{ cluster_name_apps }}
-  namespace: {{ cluster_namespace_apps }}
+    name: {{ cluster_name_apps }}
+    namespace: {{ cluster_namespace_apps }}
   source:
     path: apps
     repoURL: {{ deployment_repo }}
