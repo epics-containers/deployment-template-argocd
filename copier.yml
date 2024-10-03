@@ -130,7 +130,7 @@ deployment_repo:
   help: Remote URI of this repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-deployment
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-deployment.git
     {%- else -%}
     https://{{git_platform}}/{{github_org}}/{{ioc_group}}-deployment
     {%- endif %}
@@ -140,7 +140,7 @@ services_repo:
   help: Remote URI of the services repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-services
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-services.git
     {%- else -%}
     https://{{git_platform}}/{{github_org}}/{{ioc_group}}-services
     {%- endif %}
