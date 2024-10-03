@@ -16,21 +16,25 @@ source:
   repoURL: {{ services_repo }}
   targetRevision: {{ services_release }}
 
-# list of services to deploy. Each item is of the form:
-# - service: service name as it appears in K8S (statefulset/deployment name)
-#   targetRevision: optional override for targetRevision above
-#   repoURL: optional override for git repo to source the helm chart from
-#            the path is always services/<service> within that repo
-#   enabled: set to false to stop a service
-#   removed: set to true to remove the service from the cluster
-
 services:
-  # shared epics services ######################################################
+  # Each item is of the form:
+  #   service: service name as it appears in K8S (statefulset/deployment name)
+  #     targetRevision: optional override for targetRevision above
+  #     repoURL: optional override for git repo to source the helm chart from
+  #            the path is always services/<service> within that repo
+  #     removed: set to true to remove the service from the cluster
   epics-pvcs:
   epics-opis:
 
-  # epics iocs #################################################################
+ec_services:
+  # Services which have implemented support for an "enabled" parameter.
+  # Each item is of the form:
+  #   service: service name as it appears in K8S (statefulset/deployment name)
+  #     targetRevision: optional override for targetRevision above
+  #     repoURL: optional override for git repo to source the helm chart from
+  #            the path is always services/<service> within that repo
+  #     removed: set to true to remove the service from the cluster
+  #     enabled: set to false to stop a service
   {{ ioc_group }}-ea-test-01:
     enabled: true
-    ec_service: true
     targetRevision: {{ services_release }}
