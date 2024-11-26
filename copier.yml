@@ -1,7 +1,5 @@
 _message_before_copy: |
-  This template will create a new repository which describes the deployment IOCs and
-  services to a Kubernetes cluster using Argocd. Each repository gathers a collection
-  of ec services as Argocd Apps which are deployed to *the same Argocd Project*.
+  This template will create a new repository which describes the set of IOCs and services that Argo CD will track on a Kubernetes cluster.
 
 _subdirectory: "template"
 
@@ -9,8 +7,14 @@ _preserve_symlinks: true
 
 ioc_group:
   type: str
-  help: Short name for the collection of services.
-  placeholder: e.g. "t01", "VA", "PS"
+  help: |
+    A name for the group of IOC and service instances that this
+       repository will track.
+
+       At DLS this should be the short beamline name or the technical area
+       for accelerator repos.
+
+  placeholder: e.g. "i16", "b01-1", "p47" "vacuum"
   validator: >-
     {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
     {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
@@ -20,14 +24,23 @@ description:
   type: str
   help: A One line description of the module
   default: >-
-    {{ ioc_group }} IOC Instances and Services
+    {{ ioc_group }} IOC Instances and Services Deployment Repository for Argo CD
 
 argocd_server:
   type: str
-  help: Argocd server URI. For missing platform override argocd_server, or add your own in a PR.
-  choices:
-    argocd.diamond.ac.uk: argocd.diamond.ac.uk
-    specify: ""
+  help: |
+    Argocd server DNS Name.
+
+       At DLS this is always "argocd.diamond.ac.uk"
+  default: argocd.diamond.ac.uk
+
+argocd_cluster:
+  type: str
+  help: |
+    Cluster in which Argo CD Apps are deployed.
+
+       At DLS this is always "argus"
+  default: argus
 
 argocd_server_custom:
   type: str
@@ -35,66 +48,40 @@ argocd_server_custom:
   when: >-
     {{ not argocd_server }}
 
-argocd_project:
+cluster_name:
   type: str
-  help: Argocd project e.g. "bl01t", "VA", "PS"
-  default:  >-
+  help: |
+    The Kubernetes cluster where the IOCs and services will run.
+
+       At DLS this should be "{beamline shortname}", "acastus" for the
+       accelerator or "pollux" for test beamlines.
+  placeholder: e.g. "i16", "b01-1", "pollux", "acastus"
+  default: |
     {{ ioc_group }}
   validator: >-
-    {% if not (argocd_project | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{argocd_project}} must be lower case alphanumeric and start with a letter,
+    {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_name}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
-cluster_namespace_apps:
+cluster_namespace:
   type: str
-  help: Kubernetes cluster namespace for the Argocd Apps
-  placeholder: e.g. "bl01t-beamline", "j20-beamline", "p47-beamline"
-  validator: >-
-    {% if not (cluster_namespace_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_namespace_apps}} must be lower case alphanumeric and start with a letter,
-    it may contain hyphens
-    {% endif %}
+  help: |
+    Kubernetes namespace in which the IOCs and services will run.
 
-cluster_name_apps:
-  type: str
-  help: Name of the k8s cluster for the Argocd Apps
-  placeholder: e.g. "argus", "i20-1", "pollux"
-  default:  >-
-    {{ cluster_namespace_apps }}
+       At DLS this should be "{beamline shortname}-beamline" or "accelerator".
+  placeholder: e.g. "i16-beamline", "b01-1-beamline", "p47-beamline", "accelerator"
+  default: |-
+    {{ ioc_group }}-beamline
   validator: >-
-    {% if not (cluster_name_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_name_apps}} must be lower case alphanumeric and start with a letter,
-    it may contain hyphens
-    {% endif %}
-
-cluster_namespace_services:
-  type: str
-  help: Kubernetes cluster namespace where the IOCs and services in this repository will run
-  placeholder: e.g. "bl01t-beamline", "j20-beamline", "p47-beamline"
-  default:  >-
-    {{ cluster_namespace_apps }}
-  validator: >-
-    {% if not (cluster_namespace_apps | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_namespace_apps}} must be lower case alphanumeric and start with a letter,
-    it may contain hyphens
-    {% endif %}
-
-cluster_name_services:
-  type: str
-  help: Name of the k8s cluster where the IOCs and services in this repository will run
-  placeholder: e.g. "argus", "i20-1", "pollux"
-  default:  >-
-    {{ cluster_name_apps }}
-  validator: >-
-    {% if not (cluster_name_services | regex_search('^[a-z][a-z-0-9]+$')) %}
-    {{cluster_name_services}} must be lower case alphanumeric and start with a letter,
+    {% if not (cluster_namespace | regex_search('^[a-z][a-z-0-9]+$')) %}
+    {{cluster_namespace}} must be lower case alphanumeric and start with a letter,
     it may contain hyphens
     {% endif %}
 
 git_platform:
   type: str
-  help: Git platform hosting this repository. For missing platform override git_platform, or add your own in a PR.
+  help: Git platform hosting this repository.
   choices:
     - github.com
     - gitlab.diamond.ac.uk
@@ -137,7 +124,9 @@ deployment_repo:
 
 services_repo:
   type: str
-  help: Remote URI of the services repository.
+  help: |
+    Remote URI of the services repository that defines the IOCs and services,
+       that this repository will track.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
     https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-services.git
@@ -147,11 +136,11 @@ services_repo:
 
 services_release:
   type: str
-  help: The initial release of the services repository to track e.g. "2024.1.1"
+  help: The initial release of the services repository to track e.g. "2024.12.1" or "main"
 
 logging_url:
   type: str
-  help: URL for centralized logging. For missing platform override logging_url, or add your own in a PR.
+  help: URL for centralized logging.
   choices:
     Skip: ""
     DLS: https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message%2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A{service_name}*

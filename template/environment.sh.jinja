@@ -14,12 +14,12 @@ echo "Loading environment for {{ ioc_group }} deployment ..."
 #### SECTION 1. Environment variables ##########################################
 
 export EC_CLI_BACKEND="ARGOCD"
-# the argocd app namespace and root app
-export EC_TARGET={{ cluster_namespace_apps }}/{{ ioc_group }}
+# the argocd project and root app
+export EC_TARGET={{ cluster_namespace }}/{{ ioc_group }}
 # the git repo for this project
 export EC_SERVICES_REPO={{ services_repo }}
 # declare your centralised log server Web UI
-export EC_LOG_URL="{{ logging_url }}"
+export EC_LOG_URL='{{ logging_url }}'
 
 #### SECTION 2. Install ec #####################################################
 
