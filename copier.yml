@@ -136,7 +136,7 @@ services_repo:
 
 services_release:
   type: str
-  help: The initial release of the services repository to track e.g. "2024.12.1" or "main"
+  help: The initial tag or branch of the services repository to track e.g. "2024.12.1" or "main"
 
 logging_url:
   type: str
