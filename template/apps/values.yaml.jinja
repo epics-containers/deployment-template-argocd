@@ -1,17 +1,17 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ec-helm-charts/releases/download/4.0.0/argocd-apps.schema.json
 
-# This file configures an ArgoCD app of apps that represent a 
-# group of beamline or accelerator IOCs and services. The configuration of the 
+# This file configures an ArgoCD app of apps that represent a
+# group of beamline or accelerator IOCs and services. The configuration of the
 # services are in the separate repo indicated by repoURL.
 
 # This repostory only controls which services and which versions of those
 # services should be running on the cluster. It is recommended that this repo
 # be updated by a CI/CD pipeline or configuration tools only.
 
-project: {{ argocd_project }}
+project: {{ cluster_namespace }}
 destination:
-  name: {{ cluster_name_services }}
-  namespace: {{ cluster_namespace_services }}
+  name: {{ cluster_name }}
+  namespace: {{ cluster_namespace }}
 source:
   repoURL: {{ services_repo }}
   targetRevision: {{ services_release }}
@@ -35,6 +35,8 @@ ec_services:
   #            the path is always services/<service> within that repo
   #     removed: set to true to remove the service from the cluster
   #     enabled: set to false to stop a service
-  {{ ioc_group }}-ea-test-01:
-    enabled: true
-    targetRevision: {{ services_release }}
+
+  # example entry
+  #   {{ ioc_group }}-ea-test-01:
+  #     enabled: true
+  #     targetRevision: {{ services_release }}

@@ -5,10 +5,10 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: {{ argocd_project }}
+  project: {{ cluster_namespace }}
   destination:
-    name: {{ cluster_name_apps }}
-    namespace: {{ cluster_namespace_apps }}
+    name: {{ argocd_cluster }}
+    namespace: {{ cluster_namespace }}
   source:
     path: apps
     repoURL: {{ deployment_repo }}
