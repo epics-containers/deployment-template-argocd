@@ -104,8 +104,8 @@ dls_technical_area:
   when: >-
     {{ git_platform == 'gitlab.diamond.ac.uk' }}
   validator: >-
-    {% if not (github_org | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
-    {{github_org}} must be lower case AlphaNumeric and start with a letter,
+    {% if not (dls_technical_area | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
+    {{dls_technical_area}} must be lower case AlphaNumeric and start with a letter,
     it may contain hyphens
     {% endif -%}
   choices:
