@@ -4,7 +4,8 @@ stages:
 verify:
   stage: verify
   tags:
-    - controls,k8s
+    - epics-containers
+    - argus
   image: bitnami/kubectl:latest
   script:
     - bash ./.gitlab/ci_verify.sh
