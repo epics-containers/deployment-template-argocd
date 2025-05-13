@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ ioc_group }}
-  namespace: {{ argocd_cluster }}
+  namespace: {{ cluster_namespace }}
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
