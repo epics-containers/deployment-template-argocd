@@ -56,7 +56,7 @@ cluster_name:
        At DLS this should be "{beamline shortname}", "acastus" for the
        accelerator or "pollux" for test beamlines.
   placeholder: e.g. "i16", "b01-1", "pollux", "acastus"
-  default: |
+  default: |-
     {{ ioc_group }}
   validator: >-
     {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
