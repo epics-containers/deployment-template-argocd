@@ -6,6 +6,6 @@ verify:
   tags:
     - epics-containers
     - argus
-  image: bitnami/kubectl:latest
+  image: alpine/k8s:1.34.0
   script:
     - bash ./.gitlab/ci_verify.sh
