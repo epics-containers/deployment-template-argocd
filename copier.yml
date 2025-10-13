@@ -5,26 +5,25 @@ _subdirectory: "template"
 
 _preserve_symlinks: true
 
-ioc_group:
+domain:
   type: str
   help: |
-    A name for the group of IOC and service instances that this
-       repository will track.
+    The domain name for this collection of IOCs and services.
 
-       At DLS this should be the short beamline name or the technical area
-       for accelerator repos.
+       At DLS this should be the short beamline name or short technical area
+       name for accelerator repos. Lower case only.
 
-  placeholder: e.g. "i16", "b01-1", "p47" "vacuum"
+  placeholder: e.g. "i16", "b01-1", "p47" "va", "rf"
   validator: >-
-    {% if not (ioc_group | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
-    {{ioc_group}} must be alphanumeric plus hyphens and start with a letter.
+    {% if not (domain | regex_search('^[a-zA-Z][a-zA-Z-0-9]+$')) %}
+    {{domain}} must be alphanumeric plus hyphens and start with a letter.
     {% endif %}
 
 description:
   type: str
   help: A One line description of the module
   default: >-
-    {{ ioc_group }} IOC Instances and Services Deployment Repository for Argo CD
+    {{ domain }} IOC Instances and Services Deployment Repository for Argo CD
 
 argocd_server:
   type: str
@@ -57,7 +56,7 @@ cluster_name:
        accelerator or "pollux" for test beamlines.
   placeholder: e.g. "i16", "b01-1", "pollux", "acastus"
   default: |-
-    {{ ioc_group }}
+    {{ domain }}
   validator: >-
     {% if not (cluster_name | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{cluster_name}} must be lower case alphanumeric and start with a letter,
@@ -72,7 +71,7 @@ cluster_namespace:
        At DLS this should be "{beamline shortname}-beamline" or "accelerator".
   placeholder: e.g. "i16-beamline", "b01-1-beamline", "p47-beamline", "accelerator"
   default: |-
-    {{ ioc_group }}-beamline
+    {{ domain }}-beamline
   validator: >-
     {% if not (cluster_namespace | regex_search('^[a-z][a-z-0-9]+$')) %}
     {{cluster_namespace}} must be lower case alphanumeric and start with a letter,
@@ -117,9 +116,9 @@ deployment_repo:
   help: Remote URI of this repository.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-deployment.git
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{domain}}-deployment.git
     {%- else -%}
-    https://{{git_platform}}/{{github_org}}/{{ioc_group}}-deployment
+    https://{{git_platform}}/{{github_org}}/{{domain}}-deployment
     {%- endif %}
 
 services_repo:
@@ -129,9 +128,9 @@ services_repo:
        that this repository will track.
   default: >-
     {% if git_platform == 'gitlab.diamond.ac.uk' -%}
-    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{ioc_group}}-services.git
+    https://{{git_platform}}/controls/containers/{{dls_technical_area}}/{{domain}}-services.git
     {%- else -%}
-    https://{{git_platform}}/{{github_org}}/{{ioc_group}}-services
+    https://{{git_platform}}/{{github_org}}/{{domain}}-services
     {%- endif %}
 
 services_release:

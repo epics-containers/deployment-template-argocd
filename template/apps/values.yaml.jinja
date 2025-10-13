@@ -23,8 +23,8 @@ services:
   #     repoURL: optional override for git repo to source the helm chart from
   #            the path is always services/<service> within that repo
   #     removed: set to true to remove the service from the cluster
-  epics-pvcs:
-  epics-opis:
+  {{domain}}-epics-pvcs:
+  {{domain}}-epics-opis:
 
 ec_services:
   # Services which have implemented support for an "enabled" parameter.
@@ -37,6 +37,6 @@ ec_services:
   #     enabled: set to false to stop a service
 
   # example entry
-  #   {{ ioc_group }}-ea-test-01:
+  #   {{ domain }}-ea-test-01:
   #     enabled: true
   #     targetRevision: {{ services_release }}
