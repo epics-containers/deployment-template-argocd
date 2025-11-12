@@ -111,6 +111,13 @@ dls_technical_area:
     - beamline
     - accelerator
 
+gateway:
+  help: Deploy an EPICS gateway to allow traffic from pods without hostNetwork. 
+  default: true
+  type: bool
+  when: >-
+    {{ dls_technical_area == 'beamline' }}
+
 deployment_repo:
   type: str
   help: Remote URI of this repository.
