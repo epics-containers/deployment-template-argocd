@@ -25,4 +25,5 @@ services:
   #     removed: set to true to remove the service from the cluster
   #     enabled: set to false to stop a service
   {{domain}}-epics-pvcs:
-  {{domain}}-epics-opis:
+  {{domain}}-epics-opis:{% if gateway %}
+  {{domain}}-epics-gateways:{% endif %}
