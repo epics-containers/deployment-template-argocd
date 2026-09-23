@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://github.com/epics-containers/ec-helm-charts/releases/download/5.4.6/argocd-apps.schema.json
+# yaml-language-server: $schema=https://github.com/epics-containers/ec-helm-charts/releases/download/5.12.0/argocd-apps.schema.json
 
 # This file configures an ArgoCD app of apps that represent a
 # group of beamline or accelerator IOCs and services. The configuration of the
@@ -22,12 +22,24 @@ services:
   #     targetRevision: optional override for targetRevision above
   #     repoURL: optional override for git repo to source the helm chart from
   #            the path is always services/<service> within that repo
-  #     removed: set to true to remove the service from the cluster
+  #     serviceChart: optional override for the chart folder to use, the path
+  #            is then services/<serviceChart> within the repo
+  #     destination: optional override of name and/or namespace above
+  #     description: optional free text, shown as an annotation on the App
   #     removed: set to true to remove the service from the cluster
   #     ---- fields for ioc-instance (and other future cooperating charts)
   #     enabled: set to false to stop a service
   #     labels: custom labels to apply to the service resources
-  #     values: TBA - custom values to pass to the helm chart when deploying the service
+  #     ---- values passed to the service's helm chart
+  #     valuesObject: values that override the values files, e.g.
+  #         valuesObject:
+  #           ioc-instance:
+  #             image: ghcr.io/epics-containers/ioc-adsimdetector-runtime:2025.8.1
+  #     valuesFiles: replaces the default list of values files, which is
+  #         [../values.yaml, values.yaml] (relative to services/<service>).
+  #         Later files override earlier ones, so to add an override file
+  #         (e.g. for running in a lab instead of on the beamline) use:
+  #         valuesFiles: [../values.yaml, values.yaml, values-lab.yaml]
   #     ----
 
   {{domain}}-epics-pvcs:
