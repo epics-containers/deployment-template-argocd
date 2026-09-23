@@ -30,7 +30,8 @@ argocd_server:
   help: |
     Argocd server DNS Name.
 
-       At DLS this is always "argocd.diamond.ac.uk"
+       At DLS this is "argocd.diamond.ac.uk" for beamlines, or
+       "hylas-argocd.diamond.ac.uk" for the accelerator.
   default: argocd.diamond.ac.uk
 
 argocd_cluster:
@@ -38,7 +39,7 @@ argocd_cluster:
   help: |
     Cluster in which Argo CD Apps are deployed.
 
-       At DLS this is always "argus"
+       At DLS this is "argus" for beamlines, or "hylas" for the accelerator.
   default: argus
 
 argocd_server_custom:
@@ -53,8 +54,9 @@ cluster_name:
     The Kubernetes cluster where the IOCs and services will run.
 
        At DLS this should be "{beamline shortname}", "acastus" for the
-       accelerator or "pollux" for test beamlines.
-  placeholder: e.g. "i16", "b01-1", "pollux", "acastus"
+       accelerator, "pollux" for test beamlines, or "argus"/"hylas" for
+       services that run on those clusters.
+  placeholder: e.g. "i16", "b01-1", "pollux", "acastus", "argus"
   default: |-
     {{ domain }}
   validator: >-
