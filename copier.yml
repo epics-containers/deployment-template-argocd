@@ -30,8 +30,9 @@ argocd_server:
   help: |
     Argocd server DNS Name.
 
-       At DLS this is "argocd.diamond.ac.uk" for beamlines, or
-       "hylas-argocd.diamond.ac.uk" for the accelerator.
+       At DLS this is "argocd.diamond.ac.uk" (Argo CD on argus) for beamlines
+       and most accelerator repos, or "hylas-argocd.diamond.ac.uk" for
+       accelerator repos managed by the hylas Argo CD instance.
   default: argocd.diamond.ac.uk
 
 argocd_cluster:
@@ -39,7 +40,8 @@ argocd_cluster:
   help: |
     Cluster in which Argo CD Apps are deployed.
 
-       At DLS this is "argus" for beamlines, or "hylas" for the accelerator.
+       This must match argocd_server. At DLS this is "argus", unless
+       argocd_server is "hylas-argocd.diamond.ac.uk", in which case "hylas".
   default: argus
 
 argocd_server_custom:
