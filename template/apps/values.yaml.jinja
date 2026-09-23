@@ -21,7 +21,8 @@ services:
   #   service: service name as it appears in K8S (statefulset/deployment name)
   #     targetRevision: optional override for targetRevision above
   #     repoURL: optional override for git repo to source the helm chart from
-  #            the path is always services/<service> within that repo
+  #            the path is services/<service> (or services/<serviceChart>)
+  #            within that repo
   #     serviceChart: optional override for the chart folder to use, the path
   #            is then services/<serviceChart> within the repo
   #     destination: optional override of name and/or namespace above
@@ -35,8 +36,13 @@ services:
   #         valuesObject:
   #           ioc-instance:
   #             image: ghcr.io/epics-containers/ioc-adsimdetector-runtime:2025.8.1
+  #         Do not put a global: key in valuesObject on a service that also
+  #         sets labels; the two are not merged and one global: is lost.
+  #         Editors using the $schema link above wrongly flag a non-empty
+  #         valuesObject as invalid (a known argocd-apps schema bug).
   #     valuesFiles: replaces the default list of values files, which is
-  #         [../values.yaml, values.yaml] (relative to services/<service>).
+  #         [../values.yaml, values.yaml] (relative to the chart folder,
+  #         services/<service> or services/<serviceChart>).
   #         Later files override earlier ones, so to add an override file
   #         (e.g. for running in a lab instead of on the beamline) use:
   #         valuesFiles: [../values.yaml, values.yaml, values-lab.yaml]
