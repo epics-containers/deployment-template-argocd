@@ -30,6 +30,6 @@ services:
   #     values: TBA - custom values to pass to the helm chart when deploying the service
   #     ----
 
-  {{domain}}-epics-pvcs:
-  {{domain}}-epics-opis:{% if gateway %}
-  {{domain}}-epics-gateways:{% endif %}
+  {{domain}}-epics-pvcs: {}
+  {{domain}}-epics-opis: {}{% if gateway %}
+  {{domain}}-epics-gateways: {}{% endif %}
