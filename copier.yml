@@ -142,7 +142,8 @@ services_repo:
 
 services_release:
   type: str
-  help: The initial tag or branch of the services repository to track e.g. "2024.12.1" or "main"
+  help: The branch of the services repository that every service tracks. Production beamlines track "main".
+  default: main
 
 logging_url:
   type: str
