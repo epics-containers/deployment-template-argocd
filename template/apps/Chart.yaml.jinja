@@ -24,5 +24,6 @@ appVersion: "1.0"
 
 dependencies:
   - name: argocd-apps
-    version: 5.4.6
+    # single pin: bump argocd_apps_chart_version in copier.yml, not this line.
+    version: {{ argocd_apps_chart_version }}
     repository: "oci://ghcr.io/epics-containers/charts"
