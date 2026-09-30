@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://github.com/epics-containers/ec-helm-charts/releases/download/5.4.6/argocd-apps.schema.json
+# yaml-language-server: $schema=https://github.com/epics-containers/ec-helm-charts/releases/download/{{ argocd_apps_chart_version }}/argocd-apps.schema.json
 
 # This file configures an ArgoCD app of apps that represent a
 # group of beamline or accelerator IOCs and services. The configuration of the
@@ -16,19 +16,38 @@ source:
   repoURL: {{ services_repo }}
   targetRevision: {{ services_release }}
 
+# One targetRevision per line. A service with no `group` (Controls
+# IOCs) follows source.targetRevision above. A service with `group: daq` or
+# `group: techui` follows the matching line here instead, so moving one
+# line here moves every service in that team's line at once.
+# Add your own lines as needed, e.g. `motion-fix: fix-motor-timeouts` with
+# `group: motion-fix` on a set of IOCs to put them on a branch together.
+# A `group` with no matching entry here fails the render.
+versions:
+  daq: {{ services_release }}
+  techui: {{ services_release }}
+
 services:
   # Each item is of the form:
   #   service: service name as it appears in K8S (statefulset/deployment name)
-  #     targetRevision: optional override for targetRevision above
+  #     group: optional line from `versions` above to follow instead of
+  #            source.targetRevision, e.g. "daq", "techui" or one of your
+  #            own. Controls services take no group.
+  #     targetRevision: optional override for targetRevision above, or for
+  #            the group's line above if `group` is set
   #     repoURL: optional override for git repo to source the helm chart from
   #            the path is always services/<service> within that repo
   #     removed: set to true to remove the service from the cluster
-  #     removed: set to true to remove the service from the cluster
+  #     valuesObject: helm values for this service, overriding its values files
+  #     valuesFiles: values files for this service, relative to services/<service>;
+  #            replaces the default list [../values.yaml, values.yaml]
   #     ---- fields for ioc-instance (and other future cooperating charts)
-  #     enabled: set to false to stop a service
+  #     enabled: set to false to stop a service (ioc-instance chart only for now)
   #     labels: custom labels to apply to the service resources
-  #     values: TBA - custom values to pass to the helm chart when deploying the service
   #     ----
+  # e.g. a Data Acquisition service:
+  #   {{domain}}-blueapi:
+  #     group: daq
 
   {{domain}}-epics-pvcs: {}
   {{domain}}-epics-opis: {}{% if gateway %}
