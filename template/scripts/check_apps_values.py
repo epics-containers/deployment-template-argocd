@@ -76,6 +76,28 @@ def describe(error) -> str:
     return f"{path or '<root>'}: {error.message}"
 
 
+def check_pins(values: dict) -> list[str]:
+    """Report every service that overrides `targetRevision` for itself,
+    instead of following its group's line (or source.targetRevision).
+    Not an error: a pin is an exception to clear before a maintenance
+    window ends, and this is that checklist."""
+    versions = values.get("versions") or {}
+    warnings = []
+    for name, entry in (values.get("services") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        revision = entry.get("targetRevision")
+        if not revision:
+            continue
+        group = entry.get("group")
+        if group:
+            follows = f"versions.{group}: {versions.get(group)!r}"
+        else:
+            follows = f"source.targetRevision: {values.get('source', {}).get('targetRevision')!r}"
+        warnings.append(f"services.{name}: pinned to {revision!r} (would otherwise follow {follows})")
+    return warnings
+
+
 def main() -> None:
     path = Path(sys.argv[1] if len(sys.argv) > 1 else "apps/values.yaml")
     text = path.read_text()
@@ -101,6 +123,12 @@ def main() -> None:
         sys.exit(1)
 
     print(f"{path}: OK")
+
+    pins = check_pins(values)
+    if pins:
+        print(f"WARNING: {len(pins)} service{'s' if len(pins) != 1 else ''} pin their own targetRevision (clear these when the window ends):")
+        for pin in pins:
+            print(f"  - {pin}")
 
 
 if __name__ == "__main__":
