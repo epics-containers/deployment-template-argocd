@@ -76,6 +76,28 @@ def describe(error) -> str:
     return f"{path or '<root>'}: {error.message}"
 
 
+def check_pins(values: dict) -> list[str]:
+    """Report every service that overrides `targetRevision` for itself,
+    instead of following its group's line (or source.targetRevision).
+    Not an error: a pin is an exception to clear before a maintenance
+    window ends, and this is that checklist."""
+    versions = values.get("versions") or {}
+    warnings = []
+    for name, entry in (values.get("services") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        revision = entry.get("targetRevision")
+        if not revision:
+            continue
+        group = entry.get("group")
+        if group:
+            follows = f"versions.{group}: {versions.get(group)!r}"
+        else:
+            follows = f"source.targetRevision: {values.get('source', {}).get('targetRevision')!r}"
+        warnings.append(f"services.{name}: pinned to {revision!r} (would otherwise follow {follows})")
+    return warnings
+
+
 def main() -> None:
     path = Path(sys.argv[1] if len(sys.argv) > 1 else "apps/values.yaml")
     text = path.read_text()
@@ -90,6 +112,13 @@ def main() -> None:
         print(f"  - expected a mapping of apps values, got {type(values).__name__}")
         sys.exit(1)
 
+    # apps/ is the deployment repo's own chart and may carry templates of its
+    # own, whose values sit beside argocd-apps' at the top level. The schema
+    # stays strict below the top level, where argocd-apps' own keys live.
+    known = set(schema.get("properties", {}))
+    extra = sorted(key for key in values if key not in known)
+    schema = {**schema, "additionalProperties": True}
+
     validator = Draft202012Validator(schema)
     errors = [describe(e) for e in validator.iter_errors(values)]
     errors += check_groups(values)
@@ -101,6 +130,15 @@ def main() -> None:
         sys.exit(1)
 
     print(f"{path}: OK")
+    if extra:
+        print(f"  top-level keys for this repo's own templates (not checked): {', '.join(extra)}")
+
+    pins = check_pins(values)
+    if pins:
+        verb = "services pin their" if len(pins) != 1 else "service pins its"
+        print(f"WARNING: {len(pins)} {verb} own targetRevision (clear these when the window ends):")
+        for pin in pins:
+            print(f"  - {pin}")
 
 
 if __name__ == "__main__":
