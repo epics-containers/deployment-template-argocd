@@ -112,6 +112,13 @@ def main() -> None:
         print(f"  - expected a mapping of apps values, got {type(values).__name__}")
         sys.exit(1)
 
+    # apps/ is the deployment repo's own chart and may carry templates of its
+    # own, whose values sit beside argocd-apps' at the top level. The schema
+    # stays strict below the top level, where argocd-apps' own keys live.
+    known = set(schema.get("properties", {}))
+    extra = sorted(key for key in values if key not in known)
+    schema = {**schema, "additionalProperties": True}
+
     validator = Draft202012Validator(schema)
     errors = [describe(e) for e in validator.iter_errors(values)]
     errors += check_groups(values)
@@ -123,10 +130,13 @@ def main() -> None:
         sys.exit(1)
 
     print(f"{path}: OK")
+    if extra:
+        print(f"  top-level keys for this repo's own templates (not checked): {', '.join(extra)}")
 
     pins = check_pins(values)
     if pins:
-        print(f"WARNING: {len(pins)} service{'s' if len(pins) != 1 else ''} pin their own targetRevision (clear these when the window ends):")
+        verb = "services pin their" if len(pins) != 1 else "service pins its"
+        print(f"WARNING: {len(pins)} {verb} own targetRevision (clear these when the window ends):")
         for pin in pins:
             print(f"  - {pin}")
 
