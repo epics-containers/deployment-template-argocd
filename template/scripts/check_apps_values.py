@@ -85,6 +85,11 @@ def main() -> None:
 
     values = yaml.safe_load(text)
 
+    if not isinstance(values, dict):
+        print(f"{path}: FAILED")
+        print(f"  - expected a mapping of apps values, got {type(values).__name__}")
+        sys.exit(1)
+
     validator = Draft202012Validator(schema)
     errors = [describe(e) for e in validator.iter_errors(values)]
     errors += check_groups(values)
