@@ -13,7 +13,9 @@ wins rule, so a specific Data Acquisition or Tech UI entry placed below a
 broader Controls glob wins, which is the section order DLS deployment repos
 use (`[Controls]` first, then `[Data Acquisition]`, then `[Tech UI]`).
 Controls, any other section, and services matched by no `/services/` line
-get no `group`: they follow `source.targetRevision`.
+get no `group`: they follow `source.targetRevision`. A section header may
+have a leading `# ` (GitHub's CODEOWNERS has no sections, so the services
+repo's template writes them as comments there).
 
 Only the `group` key is touched: set to "daq" / "techui" where CODEOWNERS
 says so, removed where a service no longer resolves to one, so re-running
@@ -40,7 +42,7 @@ SECTION_TO_GROUP = {
     "tech ui": "techui",
 }
 
-SECTION_RE = re.compile(r"^\[(?P<name>[^\]]+)\]")
+SECTION_RE = re.compile(r"^(?:#\s*)?\[(?P<name>[^\]]+)\]")
 PATTERN_RE = re.compile(r"^(?P<pattern>\S+)")
 
 
@@ -49,12 +51,13 @@ def parse_codeowners(text: str) -> list[tuple[str, str | None]]:
     entries: list[tuple[str, str | None]] = []
     section: str | None = None
     for raw in text.splitlines():
-        line = raw.split("#", 1)[0].strip()
-        if not line:
-            continue
-        header = SECTION_RE.match(line)
+        stripped = raw.strip()
+        header = SECTION_RE.match(stripped)
         if header:
             section = header.group("name").strip()
+            continue
+        line = raw.split("#", 1)[0].strip()
+        if not line:
             continue
         match = PATTERN_RE.match(line)
         if not match:
