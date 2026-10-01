@@ -9,8 +9,13 @@
   null-valued keys, so a null entry removes the service from the render.
 - A service's `targetRevision` that equals `source.targetRevision` is removed:
   it changes nothing, and it stops the service following its revision line.
+- A filled-out `labels.description` moves to a top-level `description`: the
+  schema only allows a Kubernetes label value under `labels`, not free text.
+  If `description` is already set too, the move is skipped and
+  `labels.description` is dropped instead, with a warning -- moving it would
+  silently overwrite the text already in `description`.
 - `labels` entries with no value are removed, and so is `labels` if it is
-  left empty.
+  left empty (including once a `description` move empties it).
 
 Comments and layout are kept. Prints each change; with --check, changes
 nothing and exits 1 if any change is needed.
@@ -43,6 +48,17 @@ def tidy(values: CommentedMap) -> list[str]:
 
         labels = entry.get("labels")
         if isinstance(labels, dict):
+            description = labels.get("description")
+            if description:
+                if entry.get("description"):
+                    del labels["description"]
+                    changes.append(
+                        f"{name}: WARNING kept description {entry['description']!r}, "
+                        f"dropped labels.description {description!r} -- reconcile by hand"
+                    )
+                else:
+                    entry["description"] = labels.pop("description")
+                    changes.append(f"{name}: moved labels.description to description")
             for key in [k for k, v in labels.items() if v is None]:
                 del labels[key]
                 changes.append(f"{name}: removed empty label {key}")
