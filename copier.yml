@@ -151,7 +151,7 @@ argocd_apps_chart_version:
     Pinned version of the ec-helm-charts argocd-apps library chart, and of
     the matching argocd-apps.schema.json release used for editor validation.
     Not asked at generation time: bump this one value to move both.
-  default: "5.14.0-beta.1"
+  default: "5.14.0"
   when: false
 
 logging_url:
