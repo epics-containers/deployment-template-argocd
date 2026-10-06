@@ -21,6 +21,6 @@ For more details: https://argo-cd.readthedocs.io/en/latest/operator-manual/webho
 1. Navigate to your repo hosted in Gitlab
 1. Select Project -> Settings -> Webhooks
 1. Select "Add new webhook"
-1. Enter the url: `<your_argocd_server>/api/webhook` (for example: https://argocd.diamond.ac.uk/api/webhook)
+1. Enter the url: `<your_argocd_server>/api/webhook` (for this repo: https://{{ argocd_server or argocd_server_custom }}/api/webhook)
 1. Under "Trigger" tick "Push events"
 1. Finally select "Save changes"
