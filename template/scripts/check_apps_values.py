@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["jsonschema>=4.18", "PyYAML>=6.0"]
+# dependencies = ["jsonschema>=4.18", "PyYAML>=6.0", "truststore>=0.10"]
 # ///
 """Validate apps/values.yaml in CI.
 
@@ -23,10 +23,12 @@ here rather than duplicated into this script.
 
 import json
 import re
+import ssl
 import sys
 import urllib.request
 from pathlib import Path
 
+import truststore
 import yaml
 from jsonschema import Draft202012Validator
 
@@ -50,7 +52,12 @@ def find_schema_url(text: str) -> str:
 
 
 def fetch_schema(url: str) -> dict:
-    with urllib.request.urlopen(url, timeout=30) as response:  # noqa: S310
+    # Verify against the OS trust store. The uv-managed Python that uv runs
+    # this on has OpenSSL CA paths compiled for Debian (/etc/ssl/cert.pem),
+    # which do not exist on RHEL, so the default context fails verification
+    # (epics-containers/ibek#364).
+    context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    with urllib.request.urlopen(url, timeout=30, context=context) as response:  # noqa: S310
         return json.load(response)
 
 
